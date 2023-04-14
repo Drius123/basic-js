@@ -15,23 +15,41 @@ const { NotImplementedError } = require('../extensions/index.js');
  * => 'STRINGPLUS00PLUS00PLUS**STRINGPLUS00PLUS00PLUS**STRINGPLUS00PLUS00PLUS'
  *
  */
-let result;
-let repat;
-let separ;
+let result = [];
 function repeater(str, options) {
-	repat = options.repeatTimes;
-	result = str;
-	if(options.separator){
-		separ = options.separator;
-		for(let i = 0; i < repat - 1; i++){
-			result += separ + str;
+	result = [];
+	result.push(String(str));
+	if(options.additionRepeatTimes){
+		let addit = options.addition;
+		if(options.additionSeparator !== undefined){
+			for(let n = 0; n < options.additionRepeatTimes - 1; n++){
+				addit += options.additionSeparator + options.addition;
+			}
+		} else {
+			for(let n = 0; n < options.additionRepeatTimes - 1; n++){
+				addit += '|' + options.addition;
+			}
 		}
-		return result;
+		for(let i = 0; i < options.repeatTimes - 1; i++){
+			result.push(addit);
+			result.push(options.separator);
+			result.push(String(str));
+		}
+		result.push(addit);
+		return options.separator ? result.filter(x => x !== undefined).join('') : result.map(item => {return item == undefined ? '+' : item}).join('');
 	}
-	for(let i = 0; i < repat - 1; i++){
-		result += '+' + str;
+	if(options.separator){
+		for(let i = 0; i < options.repeatTimes - 1; i++){
+			result.push(options.addition);
+			result.push(options.separator);
+			result.push(str);
+		}
+		return result.concat(options.addition).filter(x => x !== undefined).join('');
 	}
-	return result;
+	for(let i = 0; i < options.repeatTimes - 1; i++){
+		result.push(str);
+	}
+	return result.join('+');
 }
 
 module.exports = {
