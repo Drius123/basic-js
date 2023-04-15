@@ -14,17 +14,33 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 function transform(arr){
+	if(!Array.isArray(arr)){
+		const err = new Error('\'arr\' parameter must be an instance of the Array!');
+		return err;
+	}
 	let discardNext = '--discard-next';
 	let doubleNext = '--double-next';
 	let discardPrev = '--discard-prev';
 	let doublePrev = '--double-prev';
+	let result = [];
 	let arrDelete = [];
 	let arrDouble = [];
+	function checker(item, index){
+		let check = 0;
+		arrDouble.forEach(itm => itm == index ? check++ : null);
+		check++;
+		let arru = [];
+		for (let i = 0; i < check; i++){
+			arru.push(item);
+		}
+		return result = result.concat(arru);
+	}
 	arr.forEach((item, index) => item == doublePrev ? arrDouble.push(index - 1) : item == doubleNext ? arrDouble.push(index + 1) : item == discardNext ? arrDelete.push(index + 1) : item == discardPrev ? arrDelete.push(index - 1) : null);
-	arr = arr.map(item => {return (item == discardPrev || item == discardNext) || (item == doublePrev || item == doubleNext) ? null : item}).filter(x => x !== null);
+	// arr = arr.map(item => {return (item == discardPrev || item == discardNext) || (item == doublePrev || item == doubleNext) ? null : item}).filter(x => x !== null);
 	// arrDelete = Array.from(new Set(arrDelete));
 	// arrDouble = Array.from(new Set(arrDouble));
-	return arr.map((item, index) => {return arrDelete.includes(index) ? null : arrDouble.includes(index) ? item * 2 : item}).filter(x => x !== null);
+	arr.forEach((item, index) => arrDelete.includes(index) ? null : arrDouble.includes(index) ? checker(item, index) : (item == discardPrev || item == discardNext) || (item == doublePrev || item == doubleNext) ? null : result.push(item));
+	return result;
 }
 
 module.exports = {
